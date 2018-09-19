@@ -41,8 +41,13 @@ print iris.data.shape[0]
 print iris.target_names.size
 
 #importer des donnes depuis internet
-iris2 = fetch_mldata('iris')
+mnist = datasets.fetch_mldata('MNIST original')
 
-print iris == iris2
-#
-#
+#afficher la matrix MNIST
+print mnist.data
+
+#afficher nombre de donnes MNIST
+print mnist.data.size
+
+#afficher le nombre de variable MNIST
+print mnist.data.shape[0]
