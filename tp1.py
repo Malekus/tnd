@@ -39,3 +39,10 @@ print iris.data.shape[0]
 
 #afficher le nombre de classes
 print iris.target_names.size
+
+#importer des donnes depuis internet
+iris2 = fetch_mldata('iris')
+
+print iris == iris2
+#
+#
