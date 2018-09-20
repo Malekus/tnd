@@ -51,3 +51,35 @@ print mnist.data.size
 
 #afficher le nombre de variable MNIST
 print mnist.data.shape[0]
+
+#afficher le numero de chaque classse
+
+
+#afficher la moyenne pour chaque variable MNIST
+print mnist.data.mean(0)
+
+#afficher l'ecart-type pour chaque variable MNIST
+print mnist.data.std(0)
+
+#afficher min pour chaque variable MNIST
+print mnist.data.min(0)
+
+#afficher max pour chaque variable MNIST
+print mnist.data.max(0)
+
+#afficher le nombre de classe avec la fonction unique
+print np.unique(mnist.target)
+
+#utilisation de la fonction help sur datasets.make_blobs
+#print help(datasets.make_blobs)
+
+#generer des donnees 1000 donnes=n_samples, 2 variables=n_features, 4 groupes=centers
+(data,label) = datasets.make_blobs(n_samples=1000, n_features=2, centers=4)
+print data, label
+
+plt.figure()
+#plt.scatter(data.mean(0), label)
+
+print data.shape[0], label.shape
+
+#plt.show()
