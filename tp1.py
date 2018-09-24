@@ -130,7 +130,7 @@ plt.show()
 #concatenation des deux datasets concatenation honrizontal hstack (n,)
 #sinon concatenation vertival vstack(n,m)
 lastData, lastLabel = np.vstack((a, c)), np.hstack((b, d))
-
+print a.shape
 plt.figure()
 plt.xlim(-15, 15)
 plt.ylim(-15, 15)
