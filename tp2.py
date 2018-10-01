@@ -2,6 +2,8 @@
 from sklearn import *
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.lda import LDA
 
 #creation de la matrix x
 x = np.array([[1,-1,2], [2,0,0], [0,1,-1]])
@@ -44,19 +46,12 @@ for ligne in range(0, len(iris.feature_names)):
             plt.title("Figure : Ligne "+ str(ligne) + " Colonne " + str(colonne))
 
 plt.show()
-#Figure Ligne 0 Colonne 3
-
-
-from sklearn.decomposition import PCA
-from sklearn.lda import LDA
-
-
+#Figure Ligne 1 Colonne 3 ou Figure Ligne 0 Colonne 3
 
 pca = PCA(n_components=2)
 
 irisPCA = pca.fit(iris.data).transform(iris.data)
 irisLDA = LDA().fit(iris.data, iris.target).transform(iris.data)
-
 
 plt.figure("Figure PCA/LDA de iris data")
 plt.subplot(1, 3, 1)
@@ -69,4 +64,4 @@ plt.scatter(irisLDA[:,0], irisLDA[:,1], c=LDA().fit(iris.data, iris.target).pred
 plt.legend()
 plt.show()
 
-print(sum(LDA().fit(iris.data, iris.target).predict(iris.data) == iris.target) / (iris.data.shape[0] + 0.0))
+print("Le taux de réussite est de " +  str(sum(LDA().fit(iris.data, iris.target).predict(iris.data) == iris.target) / (iris.data.shape[0] + 0.0)))
