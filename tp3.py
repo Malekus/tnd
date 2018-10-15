@@ -11,15 +11,21 @@ y = iris.target
 
 
 
-def ppv(x, y, voisin):
+def ppv(x, y, K):
     r = []
-    neight = KNeighborsClassifier(n_neighbors=voisin)
+    neight = KNeighborsClassifier(n_neighbors=K)
     neight.fit(x,y)
     for data in x:
-        p = metrics.pairwise.euclidean_distances(data, x)
+        p = metrics.pairwise.euclidean_distances(data.reshape(1,-1), x)
         kpp = x[np.where(np.argsort(p) == 1)[1]]
         r.append(neight.predict(kpp)[0])
-    return r        
+    
+    
+    return r, round((1 - (sum(iris.target == r) / float(iris.target.shape[0]))) * 100, 1)
 
 
-print ppv(x, y, 3)
+predictData, taux =  ppv(x, y, 1)
+
+
+
+print taux
