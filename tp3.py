@@ -1,46 +1,54 @@
-from sklearn import *
 import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn import datasets
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.naive_bayes import GaussianNB
-#  np.set_printoptions(threshold=np.nan)
+
 iris = datasets.load_iris()
+
+a = np.array([1,2,3,4,5,6,7,8,9])
+
 x = iris.data
 y = iris.target
 
+data = np.column_stack((x,y))
 
-def ppv(x, y, voisin):
-    r = []
-    neight = KNeighborsClassifier(n_neighbors=voisin)
-    neight.fit(x,y)
-    for data in x:
-        p = metrics.pairwise.euclidean_distances(data.reshape(1,-1), x)
-        kpp = x[np.where(np.argsort(p) == 1)[1]]
-        r.append(neight.predict(kpp)[0])
+def getBarycenter(x, y, k):
+    return x[np.where(np.column_stack((x,y))[:,4] == k)].mean(0)
+
+
+def barycenters(x, y):
+    return np.array([getBarycenter(x, y, k) for k in [0, 1, 2]])
+
+
+def probabiliteClasseK(data, label, x, k):
+    return 1 - (euclidean_distances([x], [getBarycenter(data, label, k)])[0][0]
+                / euclidean_distances([x], barycenters(data, label)).sum())
+
+
     
-    
-    return r, round((1 - (sum(iris.target == r) / float(iris.target.shape[0]))) * 100, 1)
+def probabiliteClasseXK(data, label, x, k):
+    b = probabiliteClasseK(data, label, x, k)
+    a = 1 / data.shape[0]
+    return (a * b) / b
 
 
-predictData, taux =  ppv(x, y, 1)
+def classDes(data, label, x):
+    a =  np.array([
+        (probabiliteClasseXK(data, label, x, 0) * probabiliteClasseK(data, label, x, 0),0),
+        (probabiliteClasseXK(data, label, x, 1) * probabiliteClasseK(data, label, x, 1),1),
+        (probabiliteClasseXK(data, label, x, 2) * probabiliteClasseK(data, label, x, 2),2)
+    ])
 
-print predictData, taux
+    return [p for k,p in a if k == np.max(a, axis=0)[0]][0]
 
-
-"""
 def CBN(x, y):
-    r = []
-    clf = GaussianNB
-    clf.fit(x, y)
-    for data in x:
-        print data
-        
+    r = np.array([classDes(x, y, x1) for x1 in x])
+    return r, round(1 - sum(y == r) / r.shape[0], 2)
 
+print(CBN(x, y))
 
-for k in np.unique(iris.target):
-    k_len =  np.where(iris.target==k)
-    print iris.data[k_len,:].mean(1)
-    #print iris.data[k_len,:].mean(1)
-    #print np.asarray(np.where(iris.target==k)).size
-"""     
+gauss = GaussianNB()
+gauss.fit(x, y)
+
+gaussPredict = [gauss.predict([x1]) for x1 in x]
+print(gauss.score(gaussPredict, y))
