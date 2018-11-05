@@ -13,11 +13,14 @@ y = iris.target
 data = np.column_stack((x,y))
 
 def getBarycenter(x, y, k):
-    return x[np.where(np.column_stack((x,y))[:,4] == k)].mean(0)
+        if (y == k).sum():
+                return x[np.where(np.column_stack((x,y))[:,4] == k)].mean(0)
+        else :
+                return np.zeros(x.shape[1])
 
 
 def barycenters(x, y):
-    return np.array([getBarycenter(x, y, k) for k in [0, 1, 2]])
+    return np.array([getBarycenter(x, y, k) for k in np.unique(y)])
 
 
 def probabiliteClasseK(data, label, x, k):
