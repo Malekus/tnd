@@ -2,6 +2,8 @@ import numpy as np
 from sklearn import datasets
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+
 
 iris = datasets.load_iris()
 
@@ -11,6 +13,16 @@ x = iris.data
 y = iris.target
 
 data = np.column_stack((x,y))
+
+def PPV(x, y):
+        r = np.array([y[np.where(np.argsort(euclidean_distances([i],x)) == 1)[1]][0] for i in x])
+        return r, np.sum(r == y) / len(y)
+
+def KNN(x, y, k):
+        neigh = KNeighborsClassifier(n_neighbors=k)       
+        neigh.fit(x, y)
+        return neigh.predict(x), neigh.score(x, y)
+
 
 def getBarycenter(x, y, k):
         if (y == k).sum():
