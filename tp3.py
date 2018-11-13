@@ -28,7 +28,7 @@ def getBarycenter(x, y, k):
         if (y == k).sum():
                 return x[np.where(np.column_stack((x,y))[:,4] == k)].mean(0)
         else :
-                return np.zeros(x.shape[1])
+                return None
 
 
 def barycenters(x, y):
@@ -67,3 +67,21 @@ gauss.fit(x, y)
 
 gaussPredict = [gauss.predict([x1]) for x1 in x]
 print(gauss.score(gaussPredict, y))
+
+"""
+def probabilite(x,y,labelCible, maData):
+    return 1 - euclidean_distances([maData], barycentre(x,y))[0][labelCible] / euclidean_distances([maData], barycentre(x,y)).sum()
+
+def allP(x, y):
+    return np.array([[probabilite(x,y,0, i), probabilite(x,y,1, i), probabilite(x,y, 2, i)] for i in x])
+
+
+
+def CBN(x, y):
+    pw = allP(x, y)
+    pi = np.array([len(x) - len(np.delete(x,k,0)) for k in x]) / len(x)
+    r = []
+    for index, data in enumerate(x):
+        r.append(np.argmax(np.delete(pi, index,0).prod() * (pw[index]**len(np.delete(pi, 0,0)))))
+    return np.array(r)
+"""
