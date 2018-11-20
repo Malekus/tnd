@@ -16,8 +16,11 @@ print iris.feature_names
 print iris.target_names
 
 #afficher nom des classes pour chaque donnees
-for index, row in enumerate(iris.data):
-    print np.append(row, iris.target_names[iris.target[index]])
+a = []
+for b,c in zip(iris.data, iris.target_names[iris.target]):
+	a.append(np.append(b,c))
+a = np.array(a)
+print(a)
 
 #afficher la moyenne pour chaque variable
 print iris.data.mean(0)
