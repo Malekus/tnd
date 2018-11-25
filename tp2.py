@@ -9,19 +9,21 @@ from sklearn.lda import LDA
 x = np.array([[1,-1,2], [2,0,0], [0,1,-1]])
 
 print x
-
+# moyenne de x2
 print "moyenne de x est " + str(x.mean(0))
 
+#variance de x2
 print "la variance de x est " + str(x.var(0))
 
+#initialisation du scaler
 ppx = preprocessing.scale(x)
 
 print ppx
 #les valeurs obtenus sont proches de 0
 
 print ppx.mean(0), ppx.var(0)
-#la moyenne de la matrice normaliser est 0 car la moyenne d'un maxtrice normaliser est tjrs 0
-#la variance de la matrice normaliser est 1 car la moyenne d'un maxtrice normaliser est tjrs 1
+#la moyenne de la matrice normaliser est 0 car la moyenne d'un matrice normaliser est tjrs 0
+#la variance de la matrice normaliser est 1 car la moyenne d'un matrice normaliser est tjrs 1
 
 x2 = np.array([[1, -1, 2], [2, 0, 0], [0, 1,-1]])
 print x2
@@ -44,24 +46,22 @@ for ligne in range(0, len(iris.feature_names)):
             plt.subplot(2, 3, m)
             plt.scatter(x=iris.data[:,ligne], y=iris.data[:,colonne], c=iris.target, alpha=0.8)
             plt.title("Figure : Ligne "+ str(ligne) + " Colonne " + str(colonne))
-
 plt.show()
 #Figure Ligne 1 Colonne 3 ou Figure Ligne 0 Colonne 3
 
-pca = PCA(n_components=2)
-
-irisPCA = pca.fit(iris.data).transform(iris.data)
+irisPCA = PCA(n_components=2).fit(iris.data).transform(iris.data)
 irisLDA = LDA().fit(iris.data, iris.target).transform(iris.data)
 
 plt.figure("Figure PCA/LDA de iris data")
 plt.subplot(1, 3, 1)
+plt.title("Iris PCA")
 plt.scatter(irisPCA[:,0], irisPCA[:,1], c=iris.target, alpha=0.8)
 plt.legend()
 plt.subplot(1, 3, 2)
 plt.scatter(irisLDA[:,0], irisLDA[:,1], c=iris.target, alpha=0.8)
 plt.subplot(1, 3, 3)
+plt.title("Iris LDA")
 plt.scatter(irisLDA[:,0], irisLDA[:,1], c=LDA().fit(iris.data, iris.target).predict(iris.data), alpha=0.8)
 plt.legend()
 plt.show()
-
 print("Le taux de réussite est de " +  str(sum(LDA().fit(iris.data, iris.target).predict(iris.data) == iris.target) / (iris.data.shape[0] + 0.0)))
