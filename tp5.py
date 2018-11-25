@@ -54,7 +54,7 @@ plt.show()
 
 
 
-
+print("Affichage")
 print(bayes.fit_predict(x_test))
 print(kmean.fit_predict(x_test))
 print(spectral.fit_predict(x_test))
