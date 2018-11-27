@@ -49,7 +49,7 @@ plt.scatter(dataX[:, 0], dataX[:, 1], c=kmeans.labels_)
 plt.show()
 
 
-def best_K(x, k):q
+def best_K(x, k):
         y, n = k_mean(x, k)
         barycenters = np.unique(np.column_stack((y, np.array([getBarycenter(x, y, el) for el in y]))), axis=0)
         r = []

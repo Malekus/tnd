@@ -3,6 +3,7 @@ from sklearn import datasets
 from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import accuracy_score
 
 
 iris = datasets.load_iris()
@@ -26,62 +27,28 @@ def KNN(x, y, k):
 
 def getBarycenter(x, y, k):
         if (y == k).sum():
-                return x[np.where(np.column_stack((x,y))[:,4] == k)].mean(0)
+                return x[y==k].mean(0)
         else :
                 return None
-
 
 def barycenters(x, y):
     return np.array([getBarycenter(x, y, k) for k in np.unique(y)])
 
+def probClasse(x, y):
+        r = []
+        for i, j in zip(euclidean_distances(x, barycenters(x, y)), euclidean_distances(x, barycenters(x, y)).sum(axis=1)) :
+                r.append(1 - i / j)
+        return np.array(r)
 
-def probabiliteClasseK(data, label, x, k):
-    return 1 - (euclidean_distances([x], [getBarycenter(data, label, k)])[0][0]
-                / euclidean_distances([x], barycenters(data, label)).sum())
-
-
-    
-def probabiliteClasseXK(data, label, x, k):
-    b = probabiliteClasseK(data, label, x, k)
-    a = 1 / data.shape[0]
-    return (a * b) / b
-
-
-def classDes(data, label, x):
-    a =  np.array([
-        (probabiliteClasseXK(data, label, x, 0) * probabiliteClasseK(data, label, x, 0),0),
-        (probabiliteClasseXK(data, label, x, 1) * probabiliteClasseK(data, label, x, 1),1),
-        (probabiliteClasseXK(data, label, x, 2) * probabiliteClasseK(data, label, x, 2),2)
-    ])
-
-    return [p for k,p in a if k == np.max(a, axis=0)[0]][0]
 
 def CBN(x, y):
-    r = np.array([classDes(x, y, x1) for x1 in x])
-    return r, round(1 - sum(y == r) / r.shape[0], 2)
+        r = np.argmax(probClasse(x, y) * [(y == i).sum() / len(y) for i in np.unique(y)], axis=1)
+        return r, round((r == y).sum() / len(x) * 100)
+    
 
 print(CBN(x, y))
 
 gauss = GaussianNB()
 gauss.fit(x, y)
-
-gaussPredict = [gauss.predict([x1]) for x1 in x]
-print(gauss.score(gaussPredict, y))
-
-"""
-def probabilite(x,y,labelCible, maData):
-    return 1 - euclidean_distances([maData], barycentre(x,y))[0][labelCible] / euclidean_distances([maData], barycentre(x,y)).sum()
-
-def allP(x, y):
-    return np.array([[probabilite(x,y,0, i), probabilite(x,y,1, i), probabilite(x,y, 2, i)] for i in x])
-
-
-
-def CBN(x, y):
-    pw = allP(x, y)
-    pi = np.array([len(x) - len(np.delete(x,k,0)) for k in x]) / len(x)
-    r = []
-    for index, data in enumerate(x):
-        r.append(np.argmax(np.delete(pi, index,0).prod() * (pw[index]**len(np.delete(pi, 0,0)))))
-    return np.array(r)
-"""
+gx = gauss.predict(x)
+print(accuracy_score(gx, y))

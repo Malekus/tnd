@@ -13,7 +13,7 @@ C = np.array(np.genfromtxt('choixprojetstab.csv',
 M = np.array(np.genfromtxt('choixprojetstab.csv',
                               dtype=float, delimiter=';', skip_header=1, usecols=range(1, 81)))
 
-color = ['red','c','green']
+color = ['red','c','green', 'purple', 'yellow']
 """
 Find best n clusters
 
@@ -21,12 +21,13 @@ Find best n clusters
 
 """
 
+monK = 3
 
 
-bayes = BayesianGaussianMixture(n_components=3).fit(M)
-kmean = KMeans(n_clusters=3, random_state=0).fit(M)
-spectral = SpectralClustering(n_clusters=3, assign_labels="discretize", random_state=0).fit(M)
-agglo = AgglomerativeClustering(n_clusters=3).fit(M)
+bayes = BayesianGaussianMixture(n_components=monK).fit(M)
+kmean = KMeans(n_clusters=monK, random_state=0).fit(M)
+spectral = SpectralClustering(n_clusters=monK, random_state=0).fit(M)
+agglo = AgglomerativeClustering(n_clusters=monK).fit(M)
 
 plt.figure()
 plt.subplot(2,2,1)
@@ -49,6 +50,7 @@ plt.show()
 
 
 """
+
 print("Affichage")
 print(bayes.fit_predict(M))
 print(kmean.fit_predict(M))
@@ -68,9 +70,10 @@ abcd = np.array([[np.sum(ij == ji) for ij in r] for ji in r])
 
 
 matrix_simi = cosine_similarity(r)
-cltEnd = SpectralClustering(n_clusters=3, random_state=0, affinity='precomputed')
+cltEnd = SpectralClustering(n_clusters=monK, random_state=0, affinity='precomputed')
 cltEnd.fit(matrix_simi)
 plt.figure("Resultat de fin")
 plt.scatter(PCA(n_components=2).fit_transform(M)[:,0], PCA(n_components=2).fit_transform(M)[:,1],
             c=np.array(color)[cltEnd.fit_predict(matrix_simi)], alpha=0.8)
 plt.show()
+
