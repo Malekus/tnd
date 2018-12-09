@@ -63,3 +63,5 @@ plt.plot([x for x in range(2,10)], nbK)
 plt.show()
 
 print(metrics.silhouette_score(x, label, metric='euclidean'))
+
+print([metrics.silhouette_score(x, k_mean(x, i)[0], metric='euclidean') for i in range(2,11)])
