@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 from sklearn import datasets
+import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
@@ -15,6 +17,9 @@ class Analyse:
         self.y = data.target
         self.features = data.feature_names
         self.color = np.array(['royalblue', 'g', 'darkorange'])
+        self.pd = pd.DataFrame(data=np.column_stack((data.data,data.target_names[data.target])), columns=[ s.replace(' ', '_') for s in data.feature_names]+["label"])
+
+# sns.load_dataset("iris")
 
     def analyse(self):
         print("Le nombre de données est " + str(self.x.size))
@@ -36,6 +41,7 @@ class Analyse:
         plt.show()
 
     def varVis(self):
+        """
         fig, axs = plt.subplots(len(self.features), len(self.features))
         for k, a in enumerate(self.features):
             for l, b in enumerate(self.features):
@@ -44,6 +50,8 @@ class Analyse:
                     axs[k, l].plot(self.x[:,l], c='r', alpha=0.8)
                 else :
                     axs[k, l].scatter(self.x[:,l], self.x[:,k], c=self.color[self.y], alpha=0.8)
+        """
+        g = sns.pairplot(self.pd, hue="label")
         plt.show()
 
     def regression_lin(self):
@@ -60,4 +68,3 @@ class Analyse:
         
 a = Analyse(iris)
 a.varVis()
-a.regression_lin()
