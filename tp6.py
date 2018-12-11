@@ -33,51 +33,67 @@ class Analyse:
     def __init__(self, data):
         self.x = data.data
         self.y = data.target
-        self.features = data.feature_names
-        self.color = np.array(['royalblue', 'g', 'darkorange'])
-        self.target_names = data.target_names if data.target_names is not None else None
+        self.features = data.feature_names if 'feature_names' in data.keys() else ['Var_'+ str(k) for k in range(len(data.data[0]))]
+        self.color = np.array(['#1f77b4', '#ff7f0e', '#2ca02c']) if len(np.unique(data.target)) <= 3 else None
+        self.target_names = data.target_names if 'target_names' in data.keys() else None
 
     def analyse(self):
-        print("Le nombre de donnees est " + str(self.x.size))
-        print("Le nombre de variable est " + str(self.x.shape[1]))
-        print("Les numeros de classes sont ")
-
+        print("Nombre de donnees : " + str(self.x.size))
+        print("Nombre de variable : " + str(self.x.shape[1]))
+        print("Numero de classe : " + str(np.unique(self.y)))
+        for index, v in enumerate(self.features):
+            print("Variable : " + v)
+            print("\tMoyenne : " + str(round(self.x[:, index].mean(0),2)))
+            print("\tEcart type : " + str(round(self.x[:, index].std(0),2)))
+            print("\tMin : " + str(round(self.x[:, index].min(0),2)))
+            print("\tMax : " + str(round(self.x[:, index].max(0),2)))
+        
     def vis(self):
-        pca = PCA(n_components=2)
-        lda = LDA(n_components=2)
-        plt.figure("Visualisation")
-        plt.subplot(1,2,1)
-        plt.scatter(pca.fit_transform(x)[:,0],
-                    pca.fit_transform(x)[:,1],
-                    c=y)
+        warnings.simplefilter("ignore")
+        pcaData = PCA(n_components=2).fit_transform(self.x)
+        ldaData = LDA(n_components=2).fit(self.x, self.y).transform(self.x)
+    
+        plt.figure("Visualisation des donnees PCA et LDA")
+        plt.subplot(1,2,1)        
+        plt.title("PCA")
+        plt.scatter(pcaData[:,0], pcaData[:,1], c=self.y)
         plt.subplot(1,2,2)
-        plt.scatter(lda.fit(x,y).transform(x)[:,0],
-                    lda.fit(x,y).transform(x)[:,1],
-                    c=y)
+        plt.title("LDA")
+        plt.scatter(ldaData[:,0], ldaData[:,1],c=self.y)
         plt.show()
-
-    def varVis(self):       
+        
+    def varVis(self):
+        taille_colonne = len(self.features) if len(self.features) < 5 else 5
+        taille_ligne = len(self.features) if len(self.features) < 5 else 5
         m = 0
         plt.figure()
-        for ligne in range(0, len(self.features)):
-            for colonne in range(0, len(self.features)):
-                if ligne != colonne:
+        for ligne in range(0, taille_ligne):
+            for colonne in range(0, taille_colonne):
+                if ligne != colonne:                    
                     m = m + 1
-                    plt.subplot(len(self.features), len(self.features)-1, m)
-                    plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.color[self.y], alpha=0.8)
+                    plt.subplot(taille_ligne, taille_colonne - 1, m)
+                    if self.color is not None:
+                        plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.color[self.y], alpha=0.8)
+                    else:
+                        plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.y, alpha=0.8)
                     plt.xlabel(self.features[colonne])
                     plt.ylabel(self.features[ligne])
         plt.show()
 
     def regression_lin(self):
+        taille_colonne = len(self.features) if len(self.features) < 5 else 5
+        taille_ligne = len(self.features) if len(self.features) < 5 else 5
         m = 0
         plt.figure()
-        for ligne in range(0, len(self.features)):
-            for colonne in range(0, len(self.features)):
+        for ligne in range(0, taille_ligne):
+            for colonne in range(0, taille_colonne):
                 if ligne != colonne:
                     m = m + 1
-                    plt.subplot(len(self.features), len(self.features)-1, m)
-                    plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.color[self.y], alpha=0.8)
+                    plt.subplot(taille_ligne, taille_colonne - 1, m)
+                    if self.color is not None:
+                        plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.color[self.y], alpha=0.8)
+                    else:
+                        plt.scatter(x=self.x[:,colonne], y=self.x[:,ligne], c=self.y, alpha=0.8)
                     plt.xlabel(self.features[colonne])
                     plt.ylabel(self.features[ligne])                    
                     x, y = self.makeRegressionLinear(np.array([self.x[:,colonne]]).transpose(), self.x[:, ligne])
@@ -99,13 +115,17 @@ class Analyse:
 
     def classificationModel(self, model='KNN'):
         if model == 'KNN':
+            print("Calcul avec l'algorithme du plus proche voisin")
             clf = KNeighborsClassifier()
         elif model == 'CBN':
+            print("Calcul avec le classifieur Bayesien Naif")
             clf = GaussianNB()
         elif model == 'MLP':
+            print("Calcul avec le Perceptron multi-couche")
             warnings.simplefilter("ignore")
             clf = MLPClassifier()
         elif model == 'SVC':
+            print("Calcul avec des machines a vecteurs de support")
             clf = SVC(gamma='auto')
         else :
             return
@@ -113,7 +133,7 @@ class Analyse:
         for index, data  in enumerate(self.x):
             clf.fit(np.delete(self.x, index, axis=0), np.delete(self.y, index, axis=0))
             tab.append(clf.predict([data])[0])
-        return tab, clf.score(self.x, self.y), classification_report(self.y, tab, target_names=self.target_names)
+        return tab, clf.score(self.x, self.y), classification_report(self.y, tab, target_names=self.target_names.astype(str))
 
     def clusterings(self):
         return [self.clusteringModel('MS'), self.clusteringModel('AP'),
@@ -153,11 +173,3 @@ from sklearn.metrics import silhouette_score (X, label)
 from sklearn.metrics import adjusted_mutual_info_score (labels_true, labels_pred, average_method=’warn’)
 from sklearn.metrics import adjusted_rand_score  (labels_true, labels_pred)
 """
-
-
-
-
-
-
-
-
