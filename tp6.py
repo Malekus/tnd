@@ -170,6 +170,6 @@ c = Analyse(digits)
 """
 from sklearn.metrics import davies_bouldin_score (X, label)
 from sklearn.metrics import silhouette_score (X, label)
-from sklearn.metrics import adjusted_mutual_info_score (labels_true, labels_pred, average_method=’warn’)
+from sklearn.metrics import adjusted_mutual_info_score (labels_true, labels_pred, average_method='warn')
 from sklearn.metrics import adjusted_rand_score  (labels_true, labels_pred)
 """
