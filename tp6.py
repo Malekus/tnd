@@ -123,7 +123,7 @@ class Analyse:
         elif model == 'MLP':
             print("Calcul avec le Perceptron multi-couche")
             warnings.simplefilter("ignore")
-            clf = MLPClassifier()
+            clf = MLPClassifier(hidden_layer_sizes=(10, 10, 1))
         elif model == 'SVC':
             print("Calcul avec des machines a vecteurs de support")
             clf = SVC(gamma='auto')
